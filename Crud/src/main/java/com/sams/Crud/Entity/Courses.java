@@ -1,6 +1,5 @@
 package com.sams.Crud.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sams.Crud.config.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;

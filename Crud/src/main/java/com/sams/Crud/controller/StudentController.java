@@ -1,5 +1,6 @@
 package com.sams.Crud.controller;
 
+import com.sams.Crud.DTO.StudentDTO;
 import com.sams.Crud.Entity.Student;
 import com.sams.Crud.Service.StudentService;
 import jakarta.validation.Valid;
@@ -28,8 +29,8 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    public Student getById(@PathVariable Long id, @Valid @RequestBody Student dept){
-        dept.setId(id);
+    public Student getById(@PathVariable Long id){
+
         return service.findbyId(id).orElse(null);
     }
 
@@ -43,5 +44,10 @@ public class StudentController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
         service.deleteById(id);
+    }
+
+    @GetMapping("/dto/{id}")
+    public StudentDTO getStudentById(@PathVariable Long id){
+        return service.getStudentDTOById(id);
     }
 }

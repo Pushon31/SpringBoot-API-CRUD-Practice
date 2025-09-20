@@ -8,9 +8,11 @@ import com.sams.Crud.Entity.Student;
 import com.sams.Crud.Repository.CoursesRepo;
 import com.sams.Crud.Repository.DeptRepo;
 import com.sams.Crud.Repository.StudentRepo;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,32 +35,37 @@ public class StudentService {
         this.deptrepo = deptrepo;
 
     }
-
-    public Student save(Student std){
-        return stdrepo.save(std);
+    @Transactional
+    public StudentDTO save(StudentDTO studentDTO){
+        Student student = toEntity(studentDTO);
+        return toDTO(stdrepo.save(student)) ;
     }
 
-    public List<Student> findAll(){
-        return stdrepo.findAll();
+    public List<StudentDTO> getAllStudents(){
+        return
+                stdrepo.findAll().stream().map(this::toDTO).toList();
     }
 
-    public Optional<Student> findbyId(Long id){
-        return stdrepo.findById(id);
+    public StudentDTO getStudentById(Long id){
+        return stdrepo.findById(id).map(this::toDTO).orElseThrow(()-> new RuntimeException("Student not found"));
     }
 
     public void deleteById(Long id){
+        if(!stdrepo.existsById(id)){
+            throw new RuntimeException("Student not found");
+        }
         stdrepo.deleteById(id);
     }
 
-    public StudentDTO getStudentDTOById(Long id){
-        Optional<Student> st = stdrepo.findById(id);
-        StudentDTO std = new StudentDTO();
-
-        st.ifPresent(student -> {
-            BeanUtils.copyProperties(student, std);
-            Set<Long> oldC =student.getCourses().stream().map(Courses::getId).collect(Collectors.toSet());
-        });
-        return std;
+//    public StudentDTO getStudentDTOById(Long id){
+//        Optional<Student> st = stdrepo.findById(id);
+//        StudentDTO std = new StudentDTO();
+//
+//        st.ifPresent(student -> {
+//            BeanUtils.copyProperties(student, std);
+//            Set<Long> oldC =student.getCourses().stream().map(Courses::getId).collect(Collectors.toSet());
+//        });
+//        return std;
 
 
 //        if (st.isPresent()){
@@ -66,9 +73,9 @@ public class StudentService {
 //
 //        }
 //        return std;
-    }
+//    }
 
-    public static StudentDTO toDTO(Student student){
+    public  StudentDTO toDTO(Student student){
         if(student == null)return null;
         StudentDTO dto = new StudentDTO();
         dto.setId(student.getId());
@@ -83,6 +90,8 @@ public class StudentService {
             dp.setName(student.getDepartment().getDeptName());
             dto.setDeptDTO(dp);
         }
+
+//        Set<Courses> courses = coursesrepo.findCoursesByStudentId(student.getId());
         if (student.getCourses() != null){
             dto.setCourseIds(
                     student.getCourses().stream().map(Courses::getId).collect(Collectors.toSet())
@@ -95,7 +104,10 @@ public class StudentService {
         if(dto == null)return null;
 
         Student student = new Student();
-        student.setId(dto.getId());
+        if (dto.getId() != null) {
+            student.setId(dto.getId());
+        }
+
         student.setFirstName(dto.getFirstName());
         student.setLastName(dto.getLastName());
         student.setEmail(dto.getEmail());

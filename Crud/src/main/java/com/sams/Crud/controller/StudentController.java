@@ -19,25 +19,25 @@ public class StudentController {
     }
 
     @PostMapping
-    public Student create(@Valid @RequestBody Student dept){
-        return service.save(dept);
+    public StudentDTO create(@Valid @RequestBody StudentDTO studentDTO){
+        return service.save(studentDTO);
     }
 
     @GetMapping
-    public List<Student> getAll(){
-        return service.findAll();
+    public List<StudentDTO> getAll(){
+        return service.getAllStudents();
     }
 
     @GetMapping("/{id}")
-    public Student getById(@PathVariable Long id){
+    public StudentDTO getById(@PathVariable Long id){
 
-        return service.findbyId(id).orElse(null);
+        return service.getStudentById(id);
     }
 
     @PutMapping("/{id}")
-    public Student update(@PathVariable Long id, @Valid @RequestBody Student dept){
-        dept.setId(id);
-        return service.save(dept);
+    public StudentDTO update(@PathVariable Long id, @Valid @RequestBody StudentDTO studentDTO){
+        studentDTO.setId(id);
+        return service.save(studentDTO);
 
     }
 
@@ -46,8 +46,8 @@ public class StudentController {
         service.deleteById(id);
     }
 
-    @GetMapping("/dto/{id}")
-    public StudentDTO getStudentById(@PathVariable Long id){
-        return service.getStudentDTOById(id);
-    }
+//    @GetMapping("/dto/{id}")
+//    public StudentDTO getStudentById(@PathVariable Long id){
+//        return service.getStudentById(id);
+//    }
 }

@@ -10,15 +10,19 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.ToString.Exclude;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true , onlyExplicitlyIncluded = true)
 @Data
 @Entity
-public class Student extends BaseEntity {
+public class
+Student extends BaseEntity {
     @NotBlank(message = "First name is required")
     @Size(min = 2, max = 50, message = "First name must be 2-50 characters")
     private String firstName;
@@ -36,7 +40,8 @@ public class Student extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "department_id")
-    @JsonIgnoreProperties("students")
+//    @JsonIgnoreProperties("students")
+    @ToString.Exclude
     private Dept department;
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
@@ -46,6 +51,7 @@ public class Student extends BaseEntity {
           inverseJoinColumns = @JoinColumn(name = "course_id")
 
     )
+    @ToString.Exclude
     private Set<Courses> courses = new HashSet<>();
 
 
